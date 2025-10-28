@@ -2,5 +2,8 @@
 Resources for Anatomy of Cyberattack session.
 
 ### Deepfakes 
-<video src="https://github.com/razi-rais/Anatomy-of-Cyberattack/blob/main/deep-fake-demo.mp4" controls width="600"></video>
+<p align="center">
+  <img src="deep-fake-demo.gif" alt="Demo GIF" width="800">
+</p>
+
 
