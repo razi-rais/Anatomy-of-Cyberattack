@@ -567,3 +567,7 @@ free disk space you can optionally remove the model:
 ```bash
 ollama rm qwen2.5:1.5b
 ```
+
+---
+
+*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../LICENSE).*

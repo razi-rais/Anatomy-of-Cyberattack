@@ -57,3 +57,7 @@ If uncertain whether a request is related, default to rejecting it.
 </p>
 
 
+
+---
+
+*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](LICENSE).*

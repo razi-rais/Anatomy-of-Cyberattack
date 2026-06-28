@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bots Protection: Turnstile</title>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; background: #0f172a; color: #e2e8f0; }
+  header { background: #1e293b; padding: 20px 28px; border-bottom: 1px solid #334155; }
+  header h1 { margin: 0 0 4px; font-size: 21px; }
+  header p { margin: 0; color: #94a3b8; font-size: 14px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+  section.block { margin: 22px auto; }
+  h2.sec { font-size: 14px; text-transform: uppercase; letter-spacing: .5px; color: #cbd5e1; margin: 0 0 12px; }
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px; }
+  .scenario { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 820px) { .scenario { grid-template-columns: 1fr; } }
+  .scenario .attack { border-left: 3px solid #ef4444; padding-left: 14px; }
+  .scenario .protect { border-left: 3px solid #22c55e; padding-left: 14px; }
+  .scenario h3 { margin: 0 0 6px; font-size: 15px; }
+  .scenario p { margin: 0; font-size: 13.5px; line-height: 1.55; color: #cbd5e1; }
+  .scenario .attack h3 { color: #fca5a5; }
+  .scenario .protect h3 { color: #86efac; }
+
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+  .flow .step { position: relative; flex: 1 1 150px; min-width: 150px; background: #0b1220;
+                border: 1px solid #334155; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+  .flow .step .n { font-weight: 700; color: #93c5fd; }
+  .flow .step.gate { border-color: #22c55e; background: #0c1f15; }
+  .flow .step.start { border-color: #475569; }
+  .flow .arrow { display: flex; align-items: center; color: #64748b; font-size: 20px; }
+  .legend { margin-top: 10px; font-size: 12px; color: #94a3b8; }
+  .legend b { color: #86efac; }
+
+  .controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid #475569; border-radius: 999px; overflow: hidden; }
+  .seg button { background: transparent; color: #cbd5e1; border: none; padding: 9px 18px; cursor: pointer; font: inherit; }
+  .seg button.active.human { background: #14532d; color: #bbf7d0; }
+  .seg button.active.bot { background: #7f1d1d; color: #fecaca; }
+  .controls .hint { font-size: 12.5px; color: #94a3b8; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  @media (max-width: 980px) { .cards { grid-template-columns: 1fr; } }
+  .mode h3 { margin: 0 0 4px; font-size: 16px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+           letter-spacing: .4px; padding: 2px 8px; border-radius: 999px; background: #334155; color: #cbd5e1; margin-bottom: 10px; }
+  .mode .label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #94a3b8; margin: 12px 0 4px; }
+  .mode .text { font-size: 13px; color: #cbd5e1; line-height: 1.5; margin: 0; }
+  .widget { min-height: 70px; margin: 10px 0; display: flex; align-items: center; }
+  .outcome { border-radius: 8px; padding: 10px 12px; font-size: 13px; border: 1px solid #334155; background: #0b1220; }
+  .outcome.idle { color: #94a3b8; }
+  .outcome.verified { border-color: #22c55e; background: #0c1f15; color: #bbf7d0; }
+  .outcome.blocked { border-color: #ef4444; background: #1b0f12; color: #fecaca; }
+  .outcome .v { font-weight: 700; }
+  .outcome pre { white-space: pre-wrap; word-break: break-all; font-size: 11.5px; color: #cbd5e1; margin: 8px 0 0; }
+  .forge { margin-top: 10px; }
+  .forge button { background: #334155; color: #e2e8f0; border: 1px solid #475569; border-radius: 8px;
+                  padding: 8px 10px; font: inherit; cursor: pointer; font-size: 12.5px; width: 100%; text-align: left; }
+  .forge button:hover { background: #3f4f6b; }
+
+  table.vs { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.vs th, table.vs td { border: 1px solid #334155; padding: 9px 12px; text-align: left; vertical-align: top; }
+  table.vs th { background: #0b1220; color: #cbd5e1; }
+  table.vs td.cap { color: #fca5a5; }
+  table.vs td.turn { color: #86efac; }
+  .note { background: #0b1f2e; border: 1px solid #1e3a5f; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #bfdbfe; }
+  details.collapsible > summary { cursor: pointer; list-style: none; font-size: 14px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .5px; color: #cbd5e1; }
+  details.collapsible > summary::-webkit-details-marker { display: none; }
+  details.collapsible > summary::before { content: "\25B6"; color: #93c5fd; margin-right: 8px; font-size: 11px; }
+  details.collapsible[open] > summary::before { content: "\25BC"; }
+  details.collapsible .hintopen { font-weight: 400; text-transform: none; letter-spacing: 0; color: #64748b; font-size: 12px; }
+  details.collapsible[open] .hintopen { display: none; }
+  .foot a { color: #93c5fd; }
+  .foot { color: #64748b; font-size: 12px; margin: 24px 0 40px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bots Protection: Turnstile</h1>
+  <p>How a modern bot check verifies a real visitor before your server accepts a form, with no puzzles to solve.</p>
+</header>
+
+<div class="wrap">
+
+  <section class="block">
+    <h2 class="sec">The scenario</h2>
+    <div class="card scenario">
+      <div class="attack">
+        <h3>The attack</h3>
+        <p>Forms are a favorite target for bots. Automated scripts hammer sign up
+        pages, login forms, comment boxes, and checkout flows to create fake
+        accounts, stuff stolen passwords, post spam, scrape data, or drain
+        inventory. A plain form has no way to tell a real person from a script,
+        so it accepts every submission.</p>
+      </div>
+      <div class="protect">
+        <h3>What Turnstile does</h3>
+        <p>Turnstile sits in front of the form. It runs quiet checks in the
+        visitor's browser, looking at signals that are hard for a bot to fake,
+        and issues a short lived token only when it trusts the visitor. Your
+        server then asks the vendor to confirm that token before it accepts the
+        action. A human passes without solving anything. A bot is stopped.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="sec">How the protection works</h2>
+    <div class="card">
+      <div class="flow">
+        <div class="step start"><div class="n">1</div> Visitor opens your form (human or bot)</div>
+        <div class="arrow">&#8594;</div>
+        <div class="step"><div class="n">2</div> Turnstile runs browser checks (no puzzle)</div>
+        <div class="arrow">&#8594;</div>
+        <div class="step"><div class="n">3</div> Widget issues a token if it trusts the browser</div>
+        <div class="arrow">&#8594;</div>
+        <div class="step"><div class="n">4</div> Your server sends token + secret to the vendor</div>
+        <div class="arrow">&#8594;</div>
+        <div class="step gate"><div class="n">5</div> The vendor replies pass or fail</div>
+        <div class="arrow">&#8594;</div>
+        <div class="step gate"><div class="n">6</div> Server allows a human, blocks a bot</div>
+      </div>
+      <p class="legend">The green steps are the real gate. <b>The browser token alone is not trusted.</b>
+      Your server must confirm it with the vendor, so a bot that skips the widget and posts a fake token is still rejected.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <details class="card collapsible">
+      <summary>How Turnstile decides: bot or human <span class="hintopen">click to expand</span></summary>
+      <div style="margin-top:14px">
+        <p class="text" style="margin:0 0 12px">All three modes run the <b>same</b> checks. They differ only in whether the
+        visitor sees a widget or is ever asked to click. The checks gather signals that are cheap for one real browser to
+        produce but hard for a bot to fake at scale, then score them to decide whether to issue a token.</p>
+        <div class="flow" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+          <div class="step"><div class="n">Browser integrity</div> Probes many browser and device APIs (navigator, window, rendering) to confirm a real, consistent browser and to spot automation tools like Selenium or Puppeteer, or a headless browser.</div>
+          <div class="step"><div class="n">Lightweight proof of work</div> Tiny background computations that are trivial for one visitor but expensive for a bot trying to pass millions of times.</div>
+          <div class="step"><div class="n">Reputation and threat intelligence</div> The vendor weighs what it already knows about the visitor's IP, network, and past challenge history across its global network.</div>
+          <div class="step"><div class="n">Connection and timing signals</div> Low level details of the connection and the timing of the checks differ between a real browser and a script.</div>
+          <div class="step"><div class="n">Optional behavior signals</div> It may consider gestures like mouse movement, but it never requires you to solve a puzzle.</div>
+          <div class="step gate"><div class="n">Adaptive decision</div> If the signals look clearly human, the visitor passes silently. If something looks risky, Managed mode can ask for a single checkbox before issuing the token.</div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="block">
+    <details class="card collapsible diagrams">
+      <summary>Architecture and full request flow <span class="hintopen">click to expand</span></summary>
+      <div style="margin-top:14px">
+        <p class="text" style="margin:0 0 6px"><b>Architecture at a glance.</b> Three parts, three separate decisions, made in three places. The numbers below match the steps under the diagram.</p>
+        <div class="mermaid">
+flowchart LR
+    subgraph Browser["Visitor browser"]
+      PAGE["Your web page and form"]
+      WIDGET["Turnstile widget runs browser checks"]
+    end
+    subgraph Server["Your web server"]
+      APP["Form handler"]
+      VAL["Server side validation"]
+    end
+    subgraph Vendor["The vendor"]
+      CHAL["Challenge service"]
+      SV["Siteverify API"]
+    end
+    WIDGET <-->|2 challenge signals| CHAL
+    PAGE -->|4 form data plus token| APP
+    APP --> VAL
+    VAL -->|5 token plus secret key| SV
+    SV -->|6 pass or fail plus metadata| VAL
+    VAL -->|7 allow or block| PAGE
+        </div>
+        <ol class="text" style="margin:10px 0 0; padding-left:20px; line-height:1.6">
+          <li><b>Page loads (browser).</b> Your page includes the widget. Its script runs in the visitor's browser.</li>
+          <li><b>Browser challenge (browser and vendor).</b> The widget runs its checks and exchanges signals with the vendor's challenge service. <b>Decision A, by the widget:</b> is this visitor trustworthy enough to receive a token? A human passes, a bot gets no token.</li>
+          <li><b>Token issued (browser).</b> If trusted, the widget puts a short lived token in a hidden field named cf-turnstile-response. The token is at most 2048 characters, valid for 5 minutes, and usable only once.</li>
+          <li><b>Form submit (browser to your server).</b> On submit, the browser sends the form data plus the token to your server.</li>
+          <li><b>Your server calls Siteverify (server to vendor).</b> Your server POSTs to the Siteverify API with two required values, your secret key and the token. The secret key never leaves your server.</li>
+          <li><b>The vendor validates the token (vendor).</b> <b>Decision B, by Siteverify:</b> is this a real, fresh, unused token for my site? It checks the TOKEN, not the visitor. The human or bot judgment already happened in step 2. Siteverify only confirms the token is authentic, was issued against your secret key, has not expired, and has not been used before. It returns success true or false plus the fields below. A reused or expired token returns success false with timeout-or-duplicate.</li>
+          <li><b>Your server decides (your server).</b> <b>Decision C, by your server:</b> allow or block. If success is true, accept the action. If false, reject it.</li>
+        </ol>
+        <p class="text" style="margin:14px 0 6px"><b>What the Siteverify response contains.</b> Your server reads success to decide, and can use the rest for extra checks.</p>
+        <table class="vs">
+          <tr><th>Field</th><th>What it means</th></tr>
+          <tr><td>success</td><td>True only if the token is genuine and still valid. The field your server acts on.</td></tr>
+          <tr><td>challenge_ts</td><td>ISO 8601 time the challenge was solved, so you can tell how old the token is.</td></tr>
+          <tr><td>hostname</td><td>The site where the challenge was served, so you can confirm it matches your own domain.</td></tr>
+          <tr><td>action, cdata</td><td>Optional labels you set on the widget, echoed back to confirm the token was for the expected action.</td></tr>
+          <tr><td>error-codes</td><td>Why it failed, for example invalid-input-response (invalid or expired) or timeout-or-duplicate (already used).</td></tr>
+        </table>
+        <table class="vs" style="margin-top:14px">
+          <tr><th>Decision</th><th>Where it happens</th><th>The question it answers</th></tr>
+          <tr><td><b>A. Issue a token?</b></td><td>The widget, in the browser</td><td>Does this visitor look like a real, low risk human?</td></tr>
+          <tr><td><b>B. Is the token valid?</b></td><td>Siteverify, on the vendor</td><td>Is this token genuine, for this site, unexpired, and unused?</td></tr>
+          <tr><td><b>C. Allow or block?</b></td><td>Your own server</td><td>Given the result, do I accept this action?</td></tr>
+        </table>
+        <p class="note" style="margin-top:14px"><b>Why your server must do steps 5 to 7.</b> The vendor states that the client side widget alone does not protect your form. Tokens can be forged, expire after 5 minutes, and are single use. Only the server side check confirms the token is real, which is why a forged token is rejected in the demo above.</p>
+        <p class="text" style="margin:18px 0 6px"><b>Full request flow.</b> From the checks that run inside the browser to the final allow or block decision on your server.</p>
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant B as Visitor browser
+    participant W as Turnstile widget in the browser
+    participant S as Your web server
+    participant V as Vendor challenge and Siteverify
+    B->>W: Page loads and the widget script runs
+    Note over W: Runs on the browser. Browser and API probing, automation and headless detection, lightweight proof of work, behavior and reputation signals
+    W->>V: Exchange challenge signals
+    V-->>W: Issue a short lived token if trusted
+    Note over B: User fills the form and submits
+    B->>S: POST form data plus token
+    S->>V: POST token plus secret key to Siteverify
+    Note over V: Validate the token. Signature, not expired, used only once, hostname match
+    V-->>S: success true or false plus metadata such as challenge_ts and hostname
+    Note over S: Decision. Valid token is a human, invalid or missing is a bot
+    S-->>B: Accept the action or block it
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="block">
+    <details class="card collapsible">
+      <summary>What the vendor does on its end, and what it never sees <span class="hintopen">click to expand</span></summary>
+      <div style="margin-top:14px">
+        <p class="text" style="margin:0 0 10px">Two things happen on the vendor's side, in two phases.</p>
+        <p class="text" style="margin:0 0 10px"><b>Phase 1, while the widget runs.</b> The widget gathers signals in the browser and exchanges them with the vendor's challenge service. The vendor evaluates those signals (browser integrity, lightweight proof of work, reputation from its global network) and, if it trusts the visitor, mints a short lived, cryptographically signed token tied to your sitekey. Here it sees the challenge signals and which site asked (your sitekey and the page hostname).</p>
+        <p class="text" style="margin:0 0 10px"><b>Phase 2, when your server calls Siteverify.</b> The vendor receives only the token, your secret key, and optionally the visitor IP. It checks the token signature to confirm it is authentic and was issued for your widget, confirms it has not expired, and confirms it has not been used before. Here it sees just the token and your secret.</p>
+        <p class="text" style="margin:0 0 6px"><b>The mental model:</b></p>
+        <ul class="text" style="margin:0; padding-left:20px; line-height:1.6">
+          <li>The vendor is <b>not</b> reading your form data at any point. The fields the user typed, the page payload, your database, none of that is sent to the vendor.</li>
+          <li>During the challenge it looks at the <b>visitor's browser signals</b>, not your page content.</li>
+          <li>During validation it looks <b>only at the token</b>, plus your secret key to authenticate the request and identify the widget.</li>
+          <li>The token is an opaque, signed <b>receipt</b> that says the vendor checked this visitor, at this time, for this site. Your server trusts it only after Siteverify confirms it is genuine.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="block">
+    <details class="card collapsible">
+      <summary>Protecting a mobile app <span class="hintopen">click to expand</span></summary>
+      <div style="margin-top:14px">
+        <p class="text" style="margin:0 0 10px">What you do depends on whether it is mobile web or a native app.</p>
+        <ul class="text" style="margin:0 0 10px; padding-left:20px; line-height:1.6">
+          <li><b>Mobile web (a website in a phone browser).</b> It works exactly the same, with no extra steps. The widget runs in the mobile browser and your server validates the token as usual.</li>
+          <li><b>Native app (iOS, Android, React Native, Flutter).</b> Turnstile does not run natively, because it needs a browser to run its JavaScript challenges. The vendor's supported approach is a WebView, a browser component embedded in your app, that loads a page containing the widget. The token is then sent to your server and validated with Siteverify, exactly as before.</li>
+        </ul>
+        <p class="text" style="margin:0 0 6px"><b>WebView requirements, from the vendor:</b></p>
+        <ul class="text" style="margin:0 0 10px; padding-left:20px; line-height:1.6">
+          <li>JavaScript enabled and the DOM storage API available.</li>
+          <li>Network access to challenges.cloudflare.com.</li>
+          <li>A consistent User Agent for the whole session. Changing it mid session makes the challenge fail.</li>
+          <li>Any Content Security Policy must still allow challenges.cloudflare.com.</li>
+        </ul>
+        <p class="note" style="margin:0"><b>Your server side does not change.</b> Whether the token came from a desktop browser, a mobile browser, or a WebView inside a native app, your backend still calls Siteverify with the token and your secret key, and makes the same allow or block decision.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="block">
+    <h2 class="sec">Try it: the three widget modes</h2>
+    <div class="card" style="margin-bottom:16px">
+      <div class="controls">
+        <span>Visitor type:</span>
+        <div class="seg">
+          <button id="btn-human" class="active human" onclick="setVisitor('human')">Human</button>
+          <button id="btn-bot" class="bot" onclick="setVisitor('bot')">Bot</button>
+        </div>
+        <span class="hint">Switch to Bot to watch each mode refuse to issue a token. Switch back to Human to pass.</span>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card mode">
+        <h3>Managed</h3>
+        <span class="badge">recommended</span>
+        <div class="label">Scenario</div>
+        <p class="text">The service decides the risk. If it needs more proof it shows a single checkbox, never an image puzzle.</p>
+        <div class="label">What happens</div>
+        <p class="text">All the checks above run in the background and are scored against the
+        visitor's risk. If the signals are clearly human, you pass with no interaction. If something looks risky,
+        the service asks for one checkbox to confirm a person is present, then issues the token. There is never an image puzzle.</p>
+        <div class="widget" id="widget-managed"></div>
+        <div class="label">Outcome</div>
+        <div class="outcome idle" id="out-managed">Waiting for the widget.</div>
+        <div class="forge"><button onclick="forge('managed')">Simulate a bot that skips the widget and posts a fake token</button></div>
+      </div>
+
+      <div class="card mode">
+        <h3>Non-Interactive</h3>
+        <span class="badge">visible, no click</span>
+        <div class="label">Scenario</div>
+        <p class="text">A visible widget runs the checks with a spinner. The visitor is never asked to do anything.</p>
+        <div class="label">What happens</div>
+        <p class="text">The same checks run, shown by a visible widget with a spinner. The visitor is
+        never asked to click. The widget collects the browser signals, scores them, and issues a token if the visitor is
+        trusted. It is the same decision as Managed, just always visible and never interactive.</p>
+        <div class="widget" id="widget-noninteractive"></div>
+        <div class="label">Outcome</div>
+        <div class="outcome idle" id="out-noninteractive">Waiting for the widget.</div>
+        <div class="forge"><button onclick="forge('noninteractive')">Simulate a bot that skips the widget and posts a fake token</button></div>
+      </div>
+
+      <div class="card mode">
+        <h3>Invisible</h3>
+        <span class="badge">nothing to see</span>
+        <div class="label">Scenario</div>
+        <p class="text">No widget appears at all. The checks run silently in the background.</p>
+        <div class="label">What happens</div>
+        <p class="text">The same checks run silently with no widget on the page. The browser is
+        probed and scored in the background, and a token is issued if it is trusted. The visitor sees nothing at all, yet
+        the same bot detection has taken place.</p>
+        <div class="widget" id="widget-invisible"><span class="text" style="color:#64748b">(no visible widget)</span></div>
+        <div class="label">Outcome</div>
+        <div class="outcome idle" id="out-invisible">Waiting for the widget.</div>
+        <div class="forge"><button onclick="forge('invisible')">Simulate a bot that skips the widget and posts a fake token</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="sec">Turnstile vs a traditional CAPTCHA</h2>
+    <div class="card">
+      <table class="vs">
+        <tr><th>Question</th><th>Traditional CAPTCHA</th><th>Turnstile</th></tr>
+        <tr><td>Who does the work</td><td class="cap">The user solves a puzzle, like picking traffic lights or reading warped text.</td><td class="turn">The browser is checked automatically. Usually nothing to solve.</td></tr>
+        <tr><td>User friction</td><td class="cap">High. Puzzles are slow, frustrating, and often fail on the first try.</td><td class="turn">Low to none. Most visitors pass without a single click.</td></tr>
+        <tr><td>Accessibility</td><td class="cap">Image and audio puzzles are hard for many users.</td><td class="turn">No puzzle to solve, and it meets WCAG 2.2 AAA.</td></tr>
+        <tr><td>Privacy</td><td class="cap">Some CAPTCHAs track users across sites for advertising.</td><td class="turn">No tracking for advertising, and no personal data sold.</td></tr>
+      </table>
+      <p class="note" style="margin-top:14px"><b>In one line:</b> a CAPTCHA asks the user to prove they are human by solving a puzzle.
+      Turnstile asks the browser to prove it, so the user usually does nothing. Turnstile is a CAPTCHA alternative, not a different kind of puzzle.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <details class="card collapsible">
+      <summary>Where reCAPTCHA fits: CAPTCHA vs reCAPTCHA vs Turnstile <span class="hintopen">click to expand</span></summary>
+      <div style="margin-top:14px">
+        <p class="text" style="margin:0 0 10px">Think of <b>CAPTCHA as the category</b>, and <b>reCAPTCHA and Turnstile as two products inside it</b>.</p>
+        <ul class="text" style="margin:0 0 10px; padding-left:20px; line-height:1.6">
+          <li><b>CAPTCHA (early 2000s).</b> The original idea: a test to tell humans from bots, usually distorted text you type. It is the umbrella term, not a single product.</li>
+          <li><b>reCAPTCHA (Google).</b> The long dominant product. <b>v2 (December 2014)</b> is the "I am not a robot" checkbox with image puzzles when unsure. <b>v3 (October 2018)</b> shows nothing and returns a score from 0.0 to 1.0 that you act on, but leans on Google cookies and cross site signals. Its tradeoffs are friction (the v2 puzzles) and privacy (Google tracking and ad ecosystem). Documentation: <a href="https://developers.google.com/recaptcha" target="_blank" rel="noopener">developers.google.com/recaptcha</a></li>
+          <li><b>Turnstile (Cloudflare, September 2022).</b> The newer challenger with the same goal, aiming to remove both tradeoffs. Usually no puzzle, and privacy preserving. The vendor states it never uses cookies, does not track user behavior, and does not rely on browsing history. It offers a similar API so teams can migrate from reCAPTCHA.</li>
+        </ul>
+        <p class="text" style="margin:0 0 10px"><b>Where reCAPTCHA stands.</b> It is the established, widely used option and still very capable. Its cost is user friction and privacy. Turnstile keeps the protection while dropping the puzzle and the tracking. CAPTCHA is the concept that both belong to.</p>
+        <table class="vs">
+          <tr><th></th><th>CAPTCHA (concept)</th><th>reCAPTCHA v2</th><th>reCAPTCHA v3</th><th>Turnstile</th></tr>
+          <tr><td>Launched</td><td>early 2000s</td><td>December 2014</td><td>October 2018</td><td>September 2022</td></tr>
+          <tr><td>What the user does</td><td>Solve a puzzle</td><td>Checkbox, sometimes images</td><td>Nothing</td><td>Usually nothing</td></tr>
+          <tr><td>Privacy</td><td>Varies</td><td>Google tracking and cookies</td><td>More tracking and profiling</td><td>No cookies, no behavior tracking</td></tr>
+          <tr><td>Tied to</td><td>No single owner</td><td>Google account, cookies, IP</td><td>Google, wider profiling</td><td>Not tied to identity</td></tr>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <p class="foot">This page uses the vendor's public test keys, so it runs with no account. It needs internet to load the widget and to verify tokens.
+  To check against your own real widget, set the TURNSTILE_SECRET environment variable on the server and use your real sitekeys.<br><br>
+  Turnstile is a product of Cloudflare. This page is an independent, educational demonstration only. It is not affiliated with, sponsored by, or endorsed by the vendor.<br>
+  Official documentation: <a href="https://developers.cloudflare.com/turnstile/" target="_blank" rel="noopener">https://developers.cloudflare.com/turnstile/</a><br><br>
+  Created by Razi Rais &middot; <a href="https://razibinrais.com" target="_blank" rel="noopener">razibinrais.com</a> &middot; Licensed under MIT</p>
+
+</div>
+
+<script>
+// Vendor public TEST sitekeys. Human keys pass, bot keys always fail.
+const KEYS = {
+  managed:        { human: "3x00000000000000000000FF", bot: "2x00000000000000000000AB" },
+  noninteractive: { human: "1x00000000000000000000AA", bot: "2x00000000000000000000AB" },
+  invisible:      { human: "1x00000000000000000000BB", bot: "2x00000000000000000000BB" },
+};
+const MODES = ["managed", "noninteractive", "invisible"];
+let visitor = "human";
+let widgetIds = {};
+let apiReady = false;
+
+function esc(s){ return (s || "").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function setOutcome(mode, kind, headline, detail){
+  const el = document.getElementById("out-" + mode);
+  el.className = "outcome " + kind;
+  let html = '<span class="v">' + esc(headline) + '</span>';
+  if(detail){ html += '<pre>' + esc(detail) + '</pre>'; }
+  el.innerHTML = html;
+}
+
+function renderCard(mode){
+  const container = document.getElementById("widget-" + mode);
+  if(widgetIds[mode] !== undefined){
+    try { turnstile.remove(widgetIds[mode]); } catch(e) {}
+    widgetIds[mode] = undefined;
+  }
+  if(mode === "invisible"){ container.innerHTML = '<span class="text" style="color:#64748b">(no visible widget)</span>'; }
+  else { container.innerHTML = ""; }
+  setOutcome(mode, "idle", "Running the check...");
+  widgetIds[mode] = turnstile.render("#widget-" + mode, {
+    sitekey: KEYS[mode][visitor],
+    theme: "dark",
+    callback: (token) => verify(mode, token),
+    "error-callback": () => {
+      setOutcome(mode, "blocked", "BLOCKED at the widget",
+        "The browser check failed, so no token was issued. The server is never asked, and the action is refused.");
+      return true;
+    },
+  });
+}
+
+function renderAll(){ MODES.forEach(renderCard); }
+
+async function verify(mode, token, opts){
+  opts = opts || {};
+  setOutcome(mode, "idle", "Token received. Verifying on the server...");
+  try {
+    const r = await fetch("/verify", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ token: token, real: !!opts.real, simulate: opts.simulate || null }),
+    });
+    const data = await r.json();
+    const cf = data.cloudflare || {};
+    let detail = JSON.stringify(cf.success !== undefined
+      ? { success: cf.success, challenge_ts: cf.challenge_ts, hostname: cf.hostname, "error-codes": cf["error-codes"] }
+      : (data.server_note || cf), null, 2);
+    if(data.server_note){ detail = data.server_note + "\n\n" + detail; }
+    if(data.verified){ setOutcome(mode, "verified", "VERIFIED human. The server accepts the action.", detail); }
+    else { setOutcome(mode, "blocked", "BLOCKED. The server rejected the token.", detail); }
+  } catch(e){
+    setOutcome(mode, "blocked", "Error contacting the server", String(e));
+  }
+}
+
+function forge(mode){
+  // A bot that never ran the widget tries to post a made up token.
+  verify(mode, "FORGED.BOGUS.TOKEN.this.cannot.be.real", { simulate: "reject" });
+}
+
+function setVisitor(v){
+  visitor = v;
+  document.getElementById("btn-human").classList.toggle("active", v === "human");
+  document.getElementById("btn-bot").classList.toggle("active", v === "bot");
+  if(apiReady){ renderAll(); }
+}
+
+window.onTurnstileLoad = function(){ apiReady = true; renderAll(); };
+
+// Render the architecture and sequence diagrams with Mermaid the first time the
+// section is opened (hidden elements cannot be laid out, so we wait for expand).
+if(window.mermaid){
+  mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "loose" });
+}
+document.querySelectorAll("details.diagrams").forEach((d) => {
+  d.addEventListener("toggle", () => {
+    if(d.open && window.mermaid){
+      try { mermaid.run({ nodes: d.querySelectorAll(".mermaid:not([data-processed])") }); } catch(e) {}
+    }
+  });
+});
+</script>
+</body>
+</html>

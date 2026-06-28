@@ -425,3 +425,7 @@ A few real systems to read about:
 
 Nothing to clean up. The lab writes no files. To free disk space you can
 optionally remove the model with `ollama rm qwen2.5:1.5b`.
+
+---
+
+*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../LICENSE).*

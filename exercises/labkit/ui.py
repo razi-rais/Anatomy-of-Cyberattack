@@ -182,6 +182,10 @@ PAGE = r"""<!DOCTYPE html>
   </section>
 </div>
 
+<footer style="max-width:1500px;margin:8px auto 28px;padding:0 20px;color:#64748b;font-size:12px;">
+  Created by Razi Rais &middot; <a href="https://razibinrais.com" target="_blank" rel="noopener" style="color:#64748b">razibinrais.com</a> &middot; Licensed under MIT
+</footer>
+
 <script>
 let current = null;          // current module info
 let currentAttackId = null;

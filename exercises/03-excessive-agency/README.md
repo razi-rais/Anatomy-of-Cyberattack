@@ -351,3 +351,7 @@ that checks every action before it runs. Read more:
 ## Cleanup
 
 Nothing to clean up. The tools are mock and the lab writes no files.
+
+---
+
+*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../LICENSE).*
