@@ -1,4 +1,4 @@
-"""Defenses for the CustomerCare Bot, the "AFTER" side of the demo.
+"""Defenses for the CustomerCare Bot, the "AFTER" side of the lab.
 
 The lab's whole point is that a raw model has no built-in boundary between
 trusted instructions and untrusted user input. Real products add a *guardrail
@@ -14,7 +14,7 @@ The output guardrail is the reliable backstop: even if a clever payload slips
 past the input filter and tricks the model, the secret never leaves the system.
 
 These are intentionally simple (regex + substring) so they are easy to read in
-a demo. Production guardrails use the same *idea* but more robust detectors.
+a lab. Production guardrails use the same *idea* but more robust detectors.
 """
 
 from __future__ import annotations

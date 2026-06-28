@@ -35,7 +35,7 @@ The guardrail tools look similar, but the threat model is completely different.
 
 In Exercise 1 you scan the user message because the user is the threat. Here you
 scan the document because the data is the threat, and you must not punish the
-trusted staff member who simply said "summarize this." In the demo the trusted
+trusted staff member who simply said "summarize this." In the lab the trusted
 staff request is shown in its own green panel, separate from the untrusted red
 ticket box, so you can see the two channels.
 
@@ -173,7 +173,7 @@ You will see that asking nicely is not enough.
 
 ---
 
-## The easy way: the browser demo (recommended for presenting)
+## Run it in the browser
 
 This exercise lives in the shared lab launcher with Exercise 1. Start it from
 the `exercises/` directory:

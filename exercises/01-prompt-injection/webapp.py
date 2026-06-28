@@ -1,6 +1,6 @@
-"""Browser demo UI for the Prompt Injection lab.
+"""Browser UI for the Prompt Injection lab.
 
-A zero-dependency web app (Python standard library only) that lets you demo the
+A zero-dependency web app (Python standard library only) that lets you run the
 attacks live:
 
 - See the bot's guardrail (system prompt).
@@ -169,7 +169,7 @@ PAGE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prompt Injection Demo: Contoso CustomerCare Bot</title>
+<title>Prompt Injection Lab: Contoso CustomerCare Bot</title>
 <style>
   :root { color-scheme: light dark; }
   * { box-sizing: border-box; }
@@ -229,7 +229,7 @@ PAGE = """<!DOCTYPE html>
 </head>
 <body>
 <header>
-  <h1>Prompt Injection Demo: Contoso CustomerCare Bot</h1>
+  <h1>Prompt Injection Lab: Contoso CustomerCare Bot</h1>
   <p>The bot below is told to protect a secret discount code. Try to make it leak. (OWASP LLM01)</p>
   <label class="switch">
     <input type="checkbox" id="defense">
@@ -443,14 +443,14 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # surface a clean error to the UI
             self._send_json(500, {"error": str(exc)})
 
-    def log_message(self, *args) -> None:  # keep the console quiet during a demo
+    def log_message(self, *args) -> None:  # keep the console quiet while running
         pass
 
 
 def main() -> None:
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     url = f"http://{HOST}:{PORT}"
-    print(f"Prompt Injection demo running at {url}")
+    print(f"Prompt Injection lab running at {url}")
     print("Press Ctrl+C to stop.")
     try:
         webbrowser.open(url)

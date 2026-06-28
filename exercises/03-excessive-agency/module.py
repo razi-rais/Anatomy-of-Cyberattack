@@ -2,7 +2,7 @@
 
 The agent can take real actions through tools. An attacker tricks it into
 calling a powerful tool. Defended mode applies an authorization policy. Tool
-selection is deterministic (see agent.py), so the demo is fully reproducible.
+selection is deterministic (see agent.py), so the lab is fully reproducible.
 """
 
 from __future__ import annotations
@@ -62,7 +62,7 @@ class _Module:
         "The harm is no longer a sentence on a screen, it is a real action: data "
         "deleted, money moved, or data emailed to a stranger.\n\n"
         "The tools here are mock, so nothing real happens, and the tool choice "
-        "is deterministic so the demo is reproducible. Turn the Defense layer ON "
+        "is deterministic so the lab is reproducible. Turn the Defense layer ON "
         "to apply an authorization policy that checks every action, its target, "
         "and its size before it runs."
     )
@@ -86,11 +86,11 @@ class _Module:
         for name, meta in TOOLS.items()
     ]
     note = (
-        "How tool selection works here: this demo uses a DETERMINISTIC router to "
+        "How tool selection works here: this lab uses a DETERMINISTIC router to "
         "choose the tool, so every click is reproducible. In a real product an "
         "LLM would choose the tool from the request. The risk is the same either "
         "way: the agent acts on untrusted text. Only the routing is made "
-        "deterministic for the demo."
+        "deterministic for this lab."
     )
     input_title = "Request to the agent"
     input_label = "Click an attack, or type your own request to OpsAssistant."

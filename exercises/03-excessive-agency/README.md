@@ -38,8 +38,8 @@ world.
 ## A note on how the agent picks tools
 
 In a real product an LLM reads the request and decides which tool to call. That
-is powerful but unpredictable, which makes a live demo flaky. This lab uses a
-small DETERMINISTIC router instead, so every click is reproducible. The attack
+is powerful but its tool choice can vary from one run to the next. This lab uses
+a small DETERMINISTIC router instead, so every click is reproducible. The attack
 text is real. Only the tool choice is made deterministic. The vulnerability is
 identical either way, because the agent still acts on untrusted text, and the
 defense is identical too, because it lives in the authorization layer, not the
@@ -121,7 +121,7 @@ flowchart TB
 
 ---
 
-## The easy way: the browser demo (recommended for presenting)
+## Run it in the browser
 
 Start the shared launcher from the `exercises/` directory and pick
 "3. Excessive Agency" in the dropdown:
@@ -321,10 +321,10 @@ that checks every action before it runs. Read more:
 - **Excessive agency.** OWASP's name for giving an AI more capability, permission,
   or autonomy than it needs, so that a manipulated agent can cause real harm.
 - **Router.** The component that maps a request to a tool. Here it is a small,
-  deterministic rule based router so the demo is reproducible. In production an
+  deterministic rule based router so the lab is reproducible. In production an
   LLM usually plays this role.
 - **Deterministic vs LLM-driven.** Deterministic means the same input always
-  gives the same tool choice (predictable, good for a demo). LLM-driven means a
+  gives the same tool choice (predictable, good for a lab). LLM-driven means a
   model chooses, which is flexible but unpredictable. The vulnerability is the
   same either way: the agent acts on untrusted text.
 - **Confused deputy.** A classic security term for a trusted component that is

@@ -170,7 +170,7 @@ class TestLiveBot(unittest.TestCase):
 # Layer 3: web UI tests (deterministic, the bot call is mocked)
 # --------------------------------------------------------------------------- #
 class TestWebApp(unittest.TestCase):
-    """Spin up the demo server on a throwaway port with a mocked model."""
+    """Spin up the web server on a throwaway port with a mocked model."""
 
     @classmethod
     def setUpClass(cls):

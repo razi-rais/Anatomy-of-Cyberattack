@@ -173,9 +173,9 @@ a secret, and there is a rule protecting it. Our job is to break the rule.
 
 ---
 
-## The easy way: the browser demo (recommended for presenting)
+## Run it in the browser
 
-If you just want to *show* the attack to an audience, use the built-in web UI:
+To work through the attacks visually, use the built-in web UI:
 
 ```bash
 cd exercises/01-prompt-injection
@@ -189,11 +189,11 @@ Your browser opens to <http://localhost:8000>. You will see:
 - A box to type your own message.
 - A big **LEAK** / **SAFE** verdict, with the leaked secret highlighted in the reply.
 - A **"What just happened?"** panel on the right that breaks the attack into its
-  five anatomy stages and explains *why* the technique worked, ideal for
-  narrating the attack to an audience.
-- A **"Defense layer (guardrails)"** switch at the top. Leave it OFF to show the
-  attack working, then flip it ON to watch the same attack get **BLOCKED** -
-  your live before/after (see Task 5).
+  five anatomy stages and explains *why* the technique worked, so you can follow
+  the attack step by step.
+- A **"Defense layer (guardrails)"** switch at the top. Leave it OFF to see the
+  attack work, then flip it ON to watch the same attack get **BLOCKED**,
+  your before/after (see Task 5).
 
 Click an attack button and watch the verdict flip to **LEAK** while the panel
 explains the mechanism stage by stage. Press `Ctrl+C` in the terminal to stop
@@ -349,7 +349,7 @@ of defense, so the *identical* payload often gets refused:
 - **Scale.** A 200-billion-parameter aligned model simply has a much firmer
   sense of its own rules than a 1.5-billion-parameter local one.
 
-> **The takeaway for your demo:** the attack is not "a ChatGPT bug" that someone
+> **The takeaway:** the attack is not "a ChatGPT bug" that someone
 > forgot to fix. It is the *default behavior of a raw language model*. Safety is
 > something you **add around** the model. This lab lets you add it yourself and
 > watch the attack die.
@@ -403,11 +403,11 @@ do it with much smarter detectors than a regex.
 
 ## Task 5: Defend it: see the BEFORE and AFTER
 
-Now make the attack fail. This is the payoff of the whole exercise.
+Now make the attack fail. This is the goal of the whole exercise.
 
-### Option A: In the browser (best for an audience)
+### Option A: In the browser
 
-1. Start the demo if it is not already running: `python3 webapp.py`.
+1. Start the app if it is not already running: `python3 webapp.py`.
 2. Make sure the **"Defense layer (guardrails)"** switch at the top is **OFF**.
 3. Click **Direct instruction override**. Verdict: **LEAK** (red). This is your
    *BEFORE*.
@@ -416,7 +416,7 @@ Now make the attack fail. This is the payoff of the whole exercise.
    (blue), and the "What just happened?" panel now shows the attack being
    stopped. This is your *AFTER*.
 
-Toggle the switch back and forth to show the same attack flipping between LEAK
+Toggle the switch back and forth to watch the same attack flip between LEAK
 and BLOCKED. That contrast is the entire point.
 
 ### Option B: On the command line
@@ -461,7 +461,7 @@ python3 -m unittest -v
 
 - **Deterministic unit tests**: check the leak detector, the bot wiring, and
   the guardrails without needing a model. These always run.
-- **Web UI tests**: start the demo server with a mocked model and verify the
+- **Web UI tests**: start the web server with a mocked model and verify the
   attack, the anatomy breakdown, and the defended path.
 - **Live integration tests**: actually send a benign question (must *not*
   leak) and the direct-override attack (must leak) to your local model. These
@@ -514,7 +514,7 @@ product you stack all of them. Prompt injection has no single fix:
 | `judge.py` | Leak detector that decides if an attack succeeded. |
 | `defenses.py` | Input + output guardrails (the toggle-able defense layer). |
 | `run_lab.py` | Runs the attack suite. Add `--defended` for the AFTER. |
-| `webapp.py` | Browser demo UI (one-click attacks, anatomy panel, defense toggle). |
+| `webapp.py` | Browser UI (one-click attacks, anatomy panel, defense toggle). |
 | `test_lab.py` | Deterministic + live tests that validate the whole lab. |
 
 ---

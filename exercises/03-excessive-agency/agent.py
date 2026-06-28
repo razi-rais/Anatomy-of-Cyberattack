@@ -13,7 +13,7 @@ Two important design choices for this lab:
 
 2. Tool selection uses a DETERMINISTIC keyword router, not a live model. In a
    real product an LLM reads the request and chooses the tool. That is powerful
-   but unpredictable, which makes a live demo flaky. Here a small rule based
+   but its choice can vary from one run to the next. Here a small rule based
    router stands in for the model so every click is reproducible. The attack
    text is still real. Only the tool choice is made deterministic. The same
    vulnerability applies either way: the agent acts on untrusted text.
