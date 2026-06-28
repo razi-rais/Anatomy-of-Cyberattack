@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editor and OS junk
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local run artifacts
+*.log
+*.tmp

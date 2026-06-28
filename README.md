@@ -1,6 +1,13 @@
 # Anatomy-of-Cyberattack
 Resources for Anatomy of Cyberattack session.
 
+## Hands-on Exercises
+Local, self-contained labs on LLM security attack patterns (prompt injection and more), each backed by automated tests. See [`exercises/`](exercises/). Run them all in one web app with a dropdown: `cd exercises && python3 serve.py`.
+
+- [Exercise 1: Direct Prompt Injection](exercises/01-prompt-injection/) (OWASP LLM01)
+- [Exercise 2: Indirect Prompt Injection](exercises/02-indirect-prompt-injection/) (OWASP LLM01)
+- [Exercise 3: Excessive Agency](exercises/03-excessive-agency/) (OWASP LLM06)
+
 
 ### PROMPT
 ```text
