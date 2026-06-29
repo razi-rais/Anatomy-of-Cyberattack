@@ -68,4 +68,4 @@ _More exercises coming next._
 
 ---
 
-*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../LICENSE).*
+*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../LICENSE).*

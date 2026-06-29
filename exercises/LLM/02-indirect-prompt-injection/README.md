@@ -428,4 +428,4 @@ optionally remove the model with `ollama rm qwen2.5:1.5b`.
 
 ---
 
-*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../LICENSE).*
+*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../../LICENSE).*
