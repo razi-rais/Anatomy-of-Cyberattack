@@ -12,6 +12,9 @@
   body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
          margin: 0; background: #0f172a; color: #e2e8f0; }
   header { background: #1e293b; padding: 20px 28px; border-bottom: 1px solid #334155; }
+  .brandline { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px;
+               margin-bottom: 10px; color: #94a3b8; font-size: 12px; }
+  .brandline a, .foot a { color: #93c5fd; }
   header h1 { margin: 0 0 4px; font-size: 21px; }
   header p { margin: 0; color: #94a3b8; font-size: 14px; }
   .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
@@ -82,6 +85,10 @@
 </head>
 <body>
 <header>
+  <div class="brandline">
+    <span>Independent web security demo</span>
+    <span>Created by <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · Copyright &copy; 2026 <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/tree/main/exercises/bots" target="_blank" rel="noopener">View demo code on GitHub</a></span>
+  </div>
   <h1>Bots Protection: Turnstile</h1>
   <p>How a modern bot check verifies a real visitor before your server accepts a form, with no puzzles to solve.</p>
 </header>
@@ -364,9 +371,9 @@ sequenceDiagram
 
   <p class="foot">This page uses the vendor's public test keys, so it runs with no account. It needs internet to load the widget and to verify tokens.
   To check against your own real widget, set the TURNSTILE_SECRET environment variable on the server and use your real sitekeys.<br><br>
-  Turnstile is a product of Cloudflare. This page is an independent, educational demonstration only. It is not affiliated with, sponsored by, or endorsed by the vendor.<br>
+  Turnstile is a product of Cloudflare. This page is an independent, educational demonstration only. It is not affiliated with, sponsored by, or endorsed by the vendor. This bot protection demo is separate from the OWASP GenAI LLM Top 10 2026 labs.<br>
   Official documentation: <a href="https://developers.cloudflare.com/turnstile/" target="_blank" rel="noopener">https://developers.cloudflare.com/turnstile/</a><br><br>
-  Created by Razi Rais &middot; <a href="https://razibinrais.com" target="_blank" rel="noopener">razibinrais.com</a> &middot; Licensed under MIT</p>
+  Created by <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> &middot; Copyright &copy; 2026 <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> &middot; <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/tree/main/exercises/bots" target="_blank" rel="noopener">View demo code on GitHub</a> &middot; Licensed under the <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></p>
 
 </div>
 

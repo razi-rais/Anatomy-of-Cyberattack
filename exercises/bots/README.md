@@ -312,8 +312,9 @@ You should see Python 3.x. No extra packages are needed.
 ### Step 2: Confirm internet access
 
 This demo loads the Turnstile widget from the vendor and verifies tokens against
-the vendor's servers, so the machine needs internet. The offline LLM labs in
-this repository do not, but this one does.
+the vendor's servers, so the machine needs internet. After setup, the first two
+LLM labs use a local Ollama model and do not need a connection to a hosted model
+service. This demo does need an active internet connection.
 
 > **Note:** The demo ships with the vendor's public test keys, so you do not
 > need an account with the vendor. To check against your own real widget instead, see
@@ -525,4 +526,4 @@ only.
 
 ---
 
-*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../LICENSE).*
+*Created by [**Razi Rais**](https://razibinrais.com) · Licensed under the [MIT License](../../LICENSE).*

@@ -21,7 +21,7 @@ AGENCY_NOTE = (
     "tools. You scope what the agent can do, validate the arguments, allowlist "
     "recipients, and keep a human in the loop for sensitive actions.\n\n"
     "Read more:\n"
-    "- OWASP Top 10 for LLM Applications (LLM06 Excessive Agency): https://genai.owasp.org\n"
+    "- OWASP GenAI LLM Top 10 2026 (LLM03 Excessive Agency): https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/\n"
     "- OWASP Agentic AI, Threats and Mitigations: https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/\n"
     "- NVIDIA NeMo Guardrails (tool and action control): https://github.com/NVIDIA/NeMo-Guardrails\n\n"
     "The takeaway: never give an agent a capability it does not strictly need, "
@@ -44,7 +44,7 @@ def _impact(call, undefended_executed: bool) -> str:
 class _Module:
     id = "03-excessive-agency"
     title = "3. Excessive Agency (tool misuse)"
-    owasp = "OWASP LLM06 Excessive Agency"
+    owasp = "OWASP LLM03:2026 Excessive Agency"
     intro = (
         "Now the bot can DO things, not just say them. OpsAssistant has tools "
         "with different risk levels. An attacker tries to make it call a "
@@ -53,14 +53,14 @@ class _Module:
     )
     context = (
         "Now the bot can ACT, not just talk. Contoso OpsAssistant is an agent: a "
-        "bot wired up to real tools. It can look up an order (safe), issue a "
+        "bot wired up to mock tools. It can look up an order (safe), issue a "
         "refund (sensitive), send an email (dangerous), or delete a record "
         "(dangerous). When a request arrives, the agent picks a tool and runs "
-        "it.\n\n"
+        "a simulation of it.\n\n"
         "The danger is that the request can contain attacker controlled text. "
         "If the agent picks a powerful tool, the attacker has just made it act. "
-        "The harm is no longer a sentence on a screen, it is a real action: data "
-        "deleted, money moved, or data emailed to a stranger.\n\n"
+        "in a real system, the harm could be data deleted, money moved, or data "
+        "emailed to a stranger. This exercise only simulates those effects.\n\n"
         "The tools here are mock, so nothing real happens, and the tool choice "
         "is deterministic so the lab is reproducible. Turn the Defense layer ON "
         "to apply an authorization policy that checks every action, its target, "
@@ -73,12 +73,20 @@ class _Module:
         "Dangerous tool runs",
         "Real-world harm",
     ]
+    visual_sequence = [
+        {"type": "attack", "icon": "💬", "title": "Attacker sends a request", "text": "Untrusted text asks an agent to delete data, send private information, or issue an excessive refund."},
+        {"type": "exposure", "icon": "🤖", "title": "Agent selects a tool", "text": "The request influences which action the agent attempts and what arguments it supplies."},
+        {"type": "weakness", "icon": "⚠️", "title": "Action has too much power", "text": "Without checks, the agent can act beyond its intended scope or on an unsafe target."},
+        {"type": "control", "icon": "🛡️", "title": "Authorization checks the action", "text": "Allow only necessary tools, validate targets and limits, and require human approval for sensitive actions."},
+        {"type": "safe", "icon": "✋", "title": "Unsafe action is blocked", "text": "The policy blocks the dangerous call or holds it for a human. This lab uses simulated tools."},
+    ]
     scenario_title = "The agent OpsAssistant"
     scenario = (
-        "OpsAssistant is an internal helper for Contoso support staff. It does "
-        "not just chat. It can call real tools to get its job done. Each tool "
-        "has a risk level. The attacks below try to make the agent call a tool "
-        "it should not, on a target it should not, or at a size it should not."
+        "OpsAssistant is a simulated internal helper for Contoso support staff. "
+        "It does not just chat. Its mock tools represent actions an agent might "
+        "take in a connected system. Each tool has a risk level. The attacks "
+        "below try to make the agent call a tool it should not, on a target it "
+        "should not, or at a size it should not."
     )
     # Rendered as a visual tool panel above the attacks.
     tools = [

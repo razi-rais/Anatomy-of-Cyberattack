@@ -29,7 +29,7 @@ COMMERCIAL_GUARDRAILS_NOTE = (
     "retraining it, and they are red-teamed and updated continuously as new "
     "attacks appear.\n\n"
     "A few real guardrail systems you can read about:\n"
-    "- OWASP Top 10 for LLM Applications (LLM01 Prompt Injection): https://genai.owasp.org\n"
+    "- OWASP GenAI LLM Top 10 2026 (LLM01 Prompt Injection): https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/\n"
     "- Microsoft Azure AI Content Safety, Prompt Shields: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/how-to-prompt-shields\n"
     "- Meta Llama Guard (an LLM that screens inputs and outputs): https://github.com/meta-llama/llama-guard\n"
     "- NVIDIA NeMo Guardrails: https://github.com/NVIDIA/NeMo-Guardrails\n"

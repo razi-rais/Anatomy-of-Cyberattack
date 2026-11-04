@@ -42,7 +42,7 @@ COMMERCIAL_GUARDRAILS_NOTE = (
     "retraining it, and they are red-teamed and updated continuously as new "
     "attacks appear.\n\n"
     "A few real guardrail systems you can read about:\n"
-    "- OWASP Top 10 for LLM Applications (LLM01 Prompt Injection): https://genai.owasp.org\n"
+    "- OWASP GenAI LLM Top 10 2026 (LLM01 Prompt Injection): https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/\n"
     "- Microsoft Azure AI Content Safety, Prompt Shields: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/how-to-prompt-shields\n"
     "- Meta Llama Guard (an LLM that screens inputs and outputs): https://github.com/meta-llama/llama-guard\n"
     "- NVIDIA NeMo Guardrails: https://github.com/NVIDIA/NeMo-Guardrails\n"
@@ -169,13 +169,18 @@ PAGE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prompt Injection Lab: Contoso CustomerCare Bot</title>
+<title>OWASP GenAI LLM Top 10 2026 Prompt Injection Lab</title>
 <style>
   :root { color-scheme: light dark; }
   * { box-sizing: border-box; }
   body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
          margin: 0; background: #0f172a; color: #e2e8f0; }
   header { background: #1e293b; padding: 20px 28px; border-bottom: 1px solid #334155; }
+  .brandline { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px;
+               margin-bottom: 10px; color: #94a3b8; font-size: 12px; }
+  .brandline a, footer a { color: #93c5fd; }
+  footer { max-width: 1500px; margin: 8px auto 28px; padding: 0 20px; color: #94a3b8;
+           font-size: 12px; line-height: 1.8; }
   header h1 { margin: 0 0 4px; font-size: 20px; }
   header p { margin: 0; color: #94a3b8; font-size: 14px; }
   .wrap { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
@@ -229,8 +234,13 @@ PAGE = """<!DOCTYPE html>
 </head>
 <body>
 <header>
+  <div class="brandline">
+    <span>OWASP GenAI LLM Top 10 2026 · LLM01 Prompt Injection</span>
+    <span>Created by <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · Copyright &copy; 2026 <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/blob/main/exercises/LLM/01-prompt-injection/webapp.py" target="_blank" rel="noopener">View demo code on GitHub</a></span>
+  </div>
   <h1>Prompt Injection Lab: Contoso CustomerCare Bot</h1>
-  <p>The bot below is told to protect a secret discount code. Try to make it leak. (OWASP LLM01)</p>
+  <p>The bot below is told to protect a secret discount code. Try to make it leak. (OWASP LLM01:2026 Prompt Injection)</p>
+  <p>This is an independent educational demo, not affiliated with or endorsed by OWASP.</p>
   <label class="switch">
     <input type="checkbox" id="defense">
     <span>Defense layer (guardrails): <b id="defstate">OFF</b></span>
@@ -265,6 +275,13 @@ PAGE = """<!DOCTYPE html>
     <div class="why" id="why" style="display:none"><h3>Why it works</h3><span id="whytext"></span></div>
   </section>
 </div>
+
+<footer>
+  OWASP GenAI LLM Top 10 2026 · Created by <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · Copyright &copy; 2026 <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a><br>
+  <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/blob/main/exercises/LLM/01-prompt-injection/webapp.py" target="_blank" rel="noopener">View demo code on GitHub</a> ·
+  <a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/" target="_blank" rel="noopener">OWASP GenAI LLM Top 10 2026</a> ·
+  Licensed under the <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+</footer>
 
 <script>
 const SECRET = %SECRET_JSON%;

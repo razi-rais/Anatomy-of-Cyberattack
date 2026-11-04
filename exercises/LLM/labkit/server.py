@@ -33,6 +33,8 @@ def module_info(module) -> dict:
         "intro": module.intro,
         "context": getattr(module, "context", ""),
         "flow": list(getattr(module, "flow", [])),
+        "visual_sequence": list(getattr(module, "visual_sequence", [])),
+        "simulation": getattr(module, "simulation", None),
         "scenario_title": module.scenario_title,
         "scenario": module.scenario,
         "trusted_instruction": getattr(module, "trusted_instruction", ""),

@@ -19,6 +19,7 @@ from unittest import mock
 import serve
 from labkit import ollama
 from labkit.server import make_handler
+from labkit.ui import PAGE
 
 
 def _load_modules():
@@ -26,16 +27,48 @@ def _load_modules():
 
 
 class TestModuleLoading(unittest.TestCase):
-    def test_both_modules_load_with_isolation(self):
+    def test_modules_load_with_isolation(self):
         modules = _load_modules()
         ids = [m.id for m in modules]
-        self.assertEqual(ids, ["01-prompt-injection", "02-indirect-prompt-injection", "03-excessive-agency"])
-        expected_counts = {"01-prompt-injection": 5, "02-indirect-prompt-injection": 3, "03-excessive-agency": 3}
+        self.assertEqual(ids, [
+            "01-prompt-injection",
+            "02-indirect-prompt-injection",
+            "03-excessive-agency",
+            "04-unbounded-consumption",
+        ])
+        expected_counts = {
+            "01-prompt-injection": 5,
+            "02-indirect-prompt-injection": 3,
+            "03-excessive-agency": 3,
+            "04-unbounded-consumption": 3,
+        }
         for m in modules:
             self.assertEqual(len(m.attacks), expected_counts[m.id])
             self.assertTrue(m.title)
             self.assertTrue(m.success_label)
             self.assertTrue(m.safe_label)
+            self.assertEqual(len(m.visual_sequence), 5)
+        expected_owasp = {
+            "01-prompt-injection": "OWASP LLM01:2026 Prompt Injection",
+            "02-indirect-prompt-injection": "OWASP LLM01:2026 Prompt Injection (indirect)",
+            "03-excessive-agency": "OWASP LLM03:2026 Excessive Agency",
+            "04-unbounded-consumption": "OWASP LLM06:2026 Unbounded Consumption",
+        }
+        self.assertEqual({m.id: m.owasp for m in modules}, expected_owasp)
+
+    def test_visual_sequence_separates_attack_and_defense_lanes(self):
+        self.assertIn('id="attackTrack"', PAGE)
+        self.assertIn('id="defenseTrack"', PAGE)
+        self.assertIn(">Attack path</h3>", PAGE)
+        self.assertIn(">Defense path</h3>", PAGE)
+
+    def test_page_brands_2026_labs_and_links_author_and_source(self):
+        self.assertIn("OWASP GenAI LLM Top 10 2026", PAGE)
+        self.assertIn('Created by <a href="https://razibinrais.com"', PAGE)
+        self.assertIn('Copyright &copy; 2026 <a href="https://razibinrais.com"', PAGE)
+        self.assertIn("View demo code on GitHub", PAGE)
+        self.assertIn("Not affiliated with or endorsed by OWASP", PAGE)
+        self.assertNotIn(">razibinrais.com<", PAGE)
 
 
 class TestDefendedInputBlock(unittest.TestCase):
@@ -105,7 +138,7 @@ class TestServerRoutes(unittest.TestCase):
 
     def test_modules_listing(self):
         data = self._get("/api/modules")
-        self.assertEqual(len(data["modules"]), 3)
+        self.assertEqual(len(data["modules"]), 4)
         self.assertIn("model", data)
 
     def test_module_info(self):
@@ -145,6 +178,39 @@ class TestServerRoutes(unittest.TestCase):
         self.assertFalse(data2["compromised"])
         self.assertEqual(data2["blocked_by"], "policy")
         self.assertEqual(data2["blocked_label"], "BLOCKED by policy")
+
+    def test_exercise4_simulates_unbounded_consumption_without_model_calls(self):
+        module = _load_modules()[3]
+        attack = module.ask("Simulate a burst.", "request_burst", defended=False)
+        self.assertTrue(attack["compromised"])
+        self.assertEqual(attack["simulation_event"]["requests"], 25)
+        self.assertEqual(attack["usage"]["model"], "deterministic simulation")
+
+        defended = module.ask("Simulate a burst.", "request_burst", defended=True)
+        self.assertFalse(defended["compromised"])
+        self.assertEqual(defended["simulation_event"]["requests"], 10)
+        self.assertEqual(defended["simulation_event"]["blocked_requests"], 15)
+        self.assertEqual(defended["simulation_event"]["total_tokens"], 9800)
+        self.assertEqual(defended["blocked_by"], "resource_limits")
+        self.assertIn("No model is called", defended["reply"])
+
+    def test_exercise4_caps_oversized_input_and_output(self):
+        module = _load_modules()[3]
+        input_result = module.ask("oversized", "oversized_prompt", defended=True)
+        self.assertEqual(input_result["simulation_event"]["input_tokens"], 1200)
+        output_result = module.ask("output", "runaway_output", defended=True)
+        self.assertEqual(output_result["simulation_event"]["output_tokens"], 800)
+
+    def test_exercise4_is_available_over_http_with_visual_sequence(self):
+        info = self._get("/api/module/04-unbounded-consumption")
+        self.assertEqual(len(info["visual_sequence"]), 5)
+        result = self._post("/api/module/04-unbounded-consumption/ask", {
+            "message": "Simulate runaway output.",
+            "attack_id": "runaway_output",
+            "defended": True,
+        })
+        self.assertEqual(result["simulation_event"]["output_tokens"], 800)
+        self.assertEqual(result["blocked_by"], "resource_limits")
 
 
 if __name__ == "__main__":

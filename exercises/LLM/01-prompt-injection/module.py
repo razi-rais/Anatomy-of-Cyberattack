@@ -22,7 +22,7 @@ from labkit.ollama import OllamaClient
 class _Module:
     id = "01-prompt-injection"
     title = "1. Direct Prompt Injection"
-    owasp = "OWASP LLM01 Prompt Injection"
+    owasp = "OWASP LLM01:2026 Prompt Injection"
     intro = (
         "The bot is told to protect a secret discount code. You type messages "
         "straight to it and try to make it break its own rule. Turn on the "
@@ -47,6 +47,13 @@ class _Module:
         "Model sees rules + attack as one text",
         "Attack outranks the rule",
         "Secret leaks",
+    ]
+    visual_sequence = [
+        {"type": "attack", "icon": "✍️", "title": "Attacker crafts a message", "text": "The attacker asks the chatbot to ignore its instructions and reveal a protected secret."},
+        {"type": "exposure", "icon": "📨", "title": "Prompt reaches the model", "text": "The user message is placed beside the trusted system instructions."},
+        {"type": "weakness", "icon": "⚠️", "title": "Instructions get confused", "text": "The model may treat the untrusted message as a newer, stronger command."},
+        {"type": "control", "icon": "🛡️", "title": "Guardrails inspect both sides", "text": "An input check blocks known attacks. An output check catches a secret in the reply."},
+        {"type": "safe", "icon": "🚫", "title": "Secret stays protected", "text": "The attack is refused before it reaches the model, or the unsafe reply is withheld."},
     ]
     scenario_title = "The guardrail (system prompt)"
     scenario = SYSTEM_PROMPT

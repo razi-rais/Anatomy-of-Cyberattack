@@ -3,7 +3,9 @@
 > **Goal:** Make a guarded AI assistant break its own rules and reveal a secret,
 > then understand *why* it happened and how to defend against it.
 >
-> **Time:** about 20 minutes. **Level:** Beginner. **Maps to:** OWASP LLM01 Prompt Injection
+> **Time:** about 20 minutes. **Level:** Beginner. **Maps to:** OWASP LLM01:2026 Prompt Injection
+
+The secret in this exercise is placed in hidden model context. Prompt injection is the primary risk demonstrated. Extracting hidden system or developer context is also related to **LLM08:2026 Hidden Context Exposure**, but this exercise is not a full demonstration of that category.
 
 ---
 
@@ -178,7 +180,7 @@ a secret, and there is a rule protecting it. Our job is to break the rule.
 To work through the attacks visually, use the built-in web UI:
 
 ```bash
-cd exercises/01-prompt-injection
+cd exercises/LLM/01-prompt-injection
 python3 webapp.py
 ```
 
@@ -208,7 +210,7 @@ First, prove the guardrail works for an honest user.
 Start the bot:
 
 ```bash
-cd exercises/01-prompt-injection
+cd exercises/LLM/01-prompt-injection
 python3 customercare_bot.py
 ```
 
@@ -389,7 +391,7 @@ continuously as new attacks appear.
 
 A few real guardrail systems you can read about:
 
-- OWASP Top 10 for LLM Applications, LLM01 Prompt Injection: <https://genai.owasp.org>
+- OWASP GenAI LLM Top 10 2026, LLM01 Prompt Injection: <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/>
 - Microsoft Azure AI Content Safety, Prompt Shields: <https://learn.microsoft.com/en-us/azure/ai-services/content-safety/how-to-prompt-shields>
 - Meta Llama Guard, an LLM that screens inputs and outputs: <https://github.com/meta-llama/llama-guard>
 - NVIDIA NeMo Guardrails: <https://github.com/NVIDIA/NeMo-Guardrails>
@@ -535,8 +537,9 @@ product you stack all of them. Prompt injection has no single fix:
 - **Guardrail.** A safety check that runs OUTSIDE the model, on the input or the
   output, to catch attacks the model itself would not stop.
 - **OWASP (Open Worldwide Application Security Project).** A nonprofit that
-  publishes widely used security guidance. Their **Top 10 for LLM Applications**
-  ranks the most important AI security risks. **LLM01** is Prompt Injection.
+  publishes widely used security guidance. The **GenAI LLM Top 10 2026** lists
+  major risks to LLM applications. **LLM01:2026** is Prompt Injection. The 2025
+  release used the same code for this category.
 - **RLHF (Reinforcement Learning from Human Feedback).** A training method where
   humans rate the model's answers and the model is tuned to prefer the
   higher-rated behavior. This is a major reason frontier models resist many
@@ -570,4 +573,4 @@ ollama rm qwen2.5:1.5b
 
 ---
 
-*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../../LICENSE).*
+*Created by [**Razi Rais**](https://razibinrais.com) · Licensed under the [MIT License](../../../LICENSE).*

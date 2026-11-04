@@ -3,7 +3,7 @@
 > **Goal:** Hijack an AI summarizer using a document it reads, without ever
 > talking to the bot yourself, then understand why it happened and how to stop it.
 >
-> **Time:** about 25 minutes. **Level:** Beginner to Intermediate. **Maps to:** OWASP LLM01 Prompt Injection (indirect)
+> **Time:** about 25 minutes. **Level:** Beginner to Intermediate. **Maps to:** OWASP LLM01:2026 Prompt Injection (indirect)
 
 ---
 
@@ -175,11 +175,11 @@ You will see that asking nicely is not enough.
 
 ## Run it in the browser
 
-This exercise lives in the shared lab launcher with Exercise 1. Start it from
-the `exercises/` directory:
+This exercise lives in the shared lab launcher with Exercise 1. From the
+repository root, start it from the `exercises/LLM` directory:
 
 ```bash
-cd exercises
+cd exercises/LLM
 python3 serve.py
 ```
 
@@ -232,7 +232,7 @@ instruction, so the model switches from summarizing to obeying.
 
 ## Task 3: Run the full ticket suite automatically
 
-From `exercises/02-indirect-prompt-injection/`:
+From `exercises/LLM/02-indirect-prompt-injection/`:
 
 ```bash
 python3 run_lab.py
@@ -354,7 +354,7 @@ Real guardrails use trained classifiers that judge meaning and intent, run as
 separate services around the model, and are red-teamed and updated continuously.
 A few real systems to read about:
 
-- OWASP Top 10 for LLM Applications, LLM01 Prompt Injection: <https://genai.owasp.org>
+- OWASP GenAI LLM Top 10 2026, LLM01 Prompt Injection: <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/>
 - Microsoft Azure AI Content Safety, Prompt Shields: <https://learn.microsoft.com/en-us/azure/ai-services/content-safety/how-to-prompt-shields>
 - Meta Llama Guard: <https://github.com/meta-llama/llama-guard>
 - NVIDIA NeMo Guardrails: <https://github.com/NVIDIA/NeMo-Guardrails>
@@ -414,8 +414,9 @@ A few real systems to read about:
 - **HTML comment.** Text in a web page or document written between `<!--` and
   `-->` that browsers hide from humans but a model still reads. A classic place
   to hide an injection.
-- **OWASP (Open Worldwide Application Security Project).** Publisher of the Top 10
-  for LLM Applications. Indirect injection falls under **LLM01 Prompt Injection**.
+- **OWASP (Open Worldwide Application Security Project).** Publisher of the
+  GenAI LLM Top 10. Indirect injection falls under **LLM01:2026 Prompt
+  Injection**. This category was also LLM01 in the 2025 release.
 - **Exfiltration.** Secretly moving sensitive data out of a system, for example
   hiding a secret inside a link or summary that gets sent onward.
 
@@ -428,4 +429,4 @@ optionally remove the model with `ollama rm qwen2.5:1.5b`.
 
 ---
 
-*Created by **Razi Rais** · https://razibinrais.com · Licensed under the [MIT License](../../../LICENSE).*
+*Created by [**Razi Rais**](https://razibinrais.com) · Licensed under the [MIT License](../../../LICENSE).*

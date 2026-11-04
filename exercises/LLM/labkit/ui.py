@@ -13,13 +13,17 @@ PAGE = r"""<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anatomy of an LLM Attack: hands-on labs</title>
+<title>OWASP GenAI LLM Top 10 2026 Labs | Anatomy of an LLM Attack</title>
 <style>
   :root { color-scheme: light dark; }
   * { box-sizing: border-box; }
   body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
          margin: 0; background: #0f172a; color: #e2e8f0; }
   header { background: #1e293b; padding: 18px 28px; border-bottom: 1px solid #334155; }
+  .brandline { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px;
+               margin-bottom: 10px; color: #94a3b8; font-size: 12px; }
+  .brandline a, footer a { color: #93c5fd; }
+  .owasp-note { margin: 0 0 10px; color: #cbd5e1; font-size: 12px; }
   header h1 { margin: 0 0 10px; font-size: 19px; }
   .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
   select { font: inherit; background: #0b1220; color: #e2e8f0; border: 1px solid #475569;
@@ -45,12 +49,68 @@ PAGE = r"""<!DOCTYPE html>
   .flow .step.end { border-color: #ef4444; background: #1b0f12; }
   .flow .num { font-weight: 700; color: #93c5fd; margin-right: 7px; }
   .flow .arrow { display: flex; align-items: center; color: #64748b; font-size: 18px; }
+  details.sequence { max-width: 1500px; margin: 18px auto 28px; padding: 0 20px; }
+  details.sequence > summary { cursor: pointer; list-style: none; background: linear-gradient(110deg,#172554,#312e81 55%,#164e63);
+    border: 1px solid #6366f1; border-radius: 12px; padding: 15px 18px; color: #e0e7ff;
+    font-size: 15px; font-weight: 750; box-shadow: 0 8px 24px #02061766; }
+  details.sequence > summary::-webkit-details-marker { display: none; }
+  details.sequence > summary::before { content: "+"; display: inline-grid; place-items: center; width: 23px; height: 23px;
+    margin-right: 10px; border-radius: 50%; background: #4338ca; color: white; }
+  details.sequence[open] > summary::before { content: "\2212"; }
+  .sequence-hint { display: block; margin: 5px 0 0 34px; font-size: 12px; font-weight: 400; color: #c7d2fe; }
+  .sequence-board { margin-top: 16px; }
+  .sequence-lane { border: 1px solid; border-radius: 14px; padding: 14px; }
+  .sequence-lane.attack-lane { background: linear-gradient(110deg,#1c1018,#24151b); border-color: #7f1d1d; }
+  .sequence-lane.defense-lane { background: linear-gradient(110deg,#0b1c2c,#0b2419); border-color: #256d55; }
+  .lane-heading { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px; }
+  .lane-heading h3 { margin:0; text-transform:uppercase; letter-spacing:.7px; font-size:13px; }
+  .attack-lane .lane-heading h3 { color:#fca5a5; }
+  .defense-lane .lane-heading h3 { color:#86efac; }
+  .lane-heading span { color:#cbd5e1; font-size:12px; }
+  .sequence-track { display: grid; gap: 20px; padding: 14px 4px 4px; }
+  .attack-track { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .defense-track { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sequence-step { position: relative; min-height: 150px; overflow: visible; border: 1px solid; border-radius: 12px;
+    padding: 16px 14px; box-shadow: 0 8px 20px #02061744; }
+  .sequence-step:not(:last-child)::after { content: "\2192"; position: absolute; z-index: 1; right: -19px; top: 45%;
+    color: #cbd5e1; font-size: 20px; font-weight: 800; }
+  .sequence-step .step-tag { display:inline-block; margin-bottom:9px; font-size:10px; font-weight:800;
+    letter-spacing:.7px; text-transform:uppercase; }
+  .attack-lane .step-tag { color:#fecaca; }
+  .defense-lane .step-tag { color:#bbf7d0; }
+  .sequence-step.attack { background: linear-gradient(145deg,#451a1a,#7f1d1d); border-color: #ef4444; }
+  .sequence-step.exposure { background: linear-gradient(145deg,#431407,#9a3412); border-color: #fb923c; }
+  .sequence-step.weakness { background: linear-gradient(145deg,#422006,#854d0e); border-color: #facc15; }
+  .sequence-step.control { background: linear-gradient(145deg,#172554,#1e40af); border-color: #60a5fa; }
+  .sequence-step.safe { background: linear-gradient(145deg,#052e1a,#166534); border-color: #4ade80; }
+  .sequence-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 12px;
+    border-radius: 10px; background: #ffffff1a; font-size: 18px; }
+  .sequence-step h3 { margin: 0 0 7px; color: #fff; font-size: 14px; }
+  .sequence-step p { margin: 0; color: #e2e8f0; font-size: 12.5px; line-height: 1.45; }
+  .sequence-gate { display:flex; justify-content:center; align-items:center; gap:10px; margin:10px 0;
+    color:#bfdbfe; font-size:12px; font-weight:800; text-align:center; }
+  .sequence-gate::before,.sequence-gate::after { content:""; height:1px; flex:1; background:linear-gradient(90deg,transparent,#60a5fa); }
+  .sequence-gate::after { background:linear-gradient(90deg,#60a5fa,transparent); }
+  .sim-meter { margin: 14px 0 0; padding: 12px; border: 1px solid #475569; border-radius: 10px; background: #0b1220; }
+  .sim-meter[hidden] { display: none; }
+  .sim-head { display:flex; justify-content:space-between; gap:8px; color:#cbd5e1; font-size:12px; }
+  .sim-track { height: 12px; margin-top: 8px; overflow:hidden; background:#334155; border-radius:99px; }
+  .sim-fill { width:0; height:100%; background:linear-gradient(90deg,#22c55e,#facc15,#ef4444); transition:width .25s; }
+  .sim-stats { margin-top: 7px; color:#94a3b8; font-size:11px; }
+  .sim-meter button { width:100%; margin-top:9px; text-align:center; font-size:12px; padding:7px; }
   details.ctx { background: #11203a; border: 1px solid #1e3a5f; border-radius: 10px; padding: 4px 14px; }
   details.ctx summary { cursor: pointer; font-weight: 700; font-size: 14px; color: #bfdbfe; padding: 8px 0; }
   details.ctx p { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; color: #cbd5e1; margin: 0 0 10px; }
   .wrap { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
           max-width: 1500px; margin: 16px auto; padding: 0 20px; }
-  @media (max-width: 1100px) { .wrap { grid-template-columns: 1fr; } }
+  @media (max-width: 1100px) {
+    .wrap { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
+    .attack-track,.defense-track { grid-template-columns: 1fr; gap: 16px; padding-left: 12px; }
+    .sequence-step { min-height: 0; }
+    .sequence-step:not(:last-child)::after { content: "\2193"; right: auto; top: auto; bottom: -19px; left: 50%; }
+  }
   .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px; }
   .card h2 { margin: 0 0 12px; font-size: 15px; text-transform: uppercase;
              letter-spacing: .5px; color: #cbd5e1; }
@@ -119,7 +179,12 @@ PAGE = r"""<!DOCTYPE html>
 </head>
 <body>
 <header>
+  <div class="brandline">
+    <span>Independent learning labs mapped to the OWASP GenAI LLM Top 10 2026</span>
+    <span>Created by <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · Copyright &copy; 2026 <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/tree/main/exercises/LLM" target="_blank" rel="noopener">View demo code on GitHub</a></span>
+  </div>
   <h1>Anatomy of an LLM Attack: hands-on labs</h1>
+  <p class="owasp-note">An independent educational resource. Not affiliated with or endorsed by OWASP.</p>
   <div class="controls">
     <label class="label" style="margin:0">Exercise:
       <select id="module"></select>
@@ -171,6 +236,12 @@ PAGE = r"""<!DOCTYPE html>
     <div style="margin-top:16px"><span class="verdict idle" id="verdict">No message sent yet</span></div>
     <div class="toolcall" id="toolcall" style="display:none"></div>
     <div class="usage" id="usage"></div>
+    <div class="sim-meter" id="simMeter" hidden>
+      <div class="sim-head"><b>Simulated resource use</b><span id="simTokens"></span></div>
+      <div class="sim-track"><div class="sim-fill" id="simFill"></div></div>
+      <div class="sim-stats" id="simStats"></div>
+      <button class="ghost" id="resetSimulation" type="button">Clear usage display</button>
+    </div>
     <div class="reply" id="reply"><span class="muted">The bot's reply will appear here.</span></div>
   </section>
 
@@ -182,8 +253,26 @@ PAGE = r"""<!DOCTYPE html>
   </section>
 </div>
 
-<footer style="max-width:1500px;margin:8px auto 28px;padding:0 20px;color:#64748b;font-size:12px;">
-  Created by Razi Rais &middot; <a href="https://razibinrais.com" target="_blank" rel="noopener" style="color:#64748b">razibinrais.com</a> &middot; Licensed under MIT
+<details class="sequence" id="sequenceBox">
+  <summary id="sequenceTitle">Attack and defense sequence<span class="sequence-hint">The red lane shows the attack path. The blue and green lane shows the control and safe result.</span></summary>
+  <div class="sequence-board">
+    <section class="sequence-lane attack-lane" aria-labelledby="attackLaneTitle">
+      <div class="lane-heading"><h3 id="attackLaneTitle">Attack path</h3><span>What the attacker does and where the weakness appears</span></div>
+      <div class="sequence-track attack-track" id="attackTrack"></div>
+    </section>
+    <div class="sequence-gate" aria-label="Security control checkpoint">Security control checkpoint</div>
+    <section class="sequence-lane defense-lane" aria-labelledby="defenseLaneTitle">
+      <div class="lane-heading"><h3 id="defenseLaneTitle">Defense path</h3><span>What the security control checks and how it stops the impact</span></div>
+      <div class="sequence-track defense-track" id="defenseTrack"></div>
+    </section>
+  </div>
+</details>
+
+<footer style="max-width:1500px;margin:8px auto 28px;padding:0 20px;color:#94a3b8;font-size:12px;line-height:1.8;">
+  OWASP GenAI LLM Top 10 2026 learning labs · Created by <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a> · Copyright &copy; 2026 <a href="https://razibinrais.com" target="_blank" rel="noopener">Razi Rais</a><br>
+  <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/tree/main/exercises/LLM" target="_blank" rel="noopener">View demo code on GitHub</a> ·
+  <a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/" target="_blank" rel="noopener">OWASP GenAI LLM Top 10 2026</a> ·
+  Licensed under the <a href="https://github.com/razi-rais/Anatomy-of-Cyberattack/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
 </footer>
 
 <script>
@@ -230,6 +319,22 @@ async function loadModule(id){
   current = await r.json();
   highlights = current.highlights || [];
   currentAttackId = null;
+  document.getElementById('sequenceBox').open = false;
+  const attackTrack = document.getElementById('attackTrack');
+  const defenseTrack = document.getElementById('defenseTrack');
+  attackTrack.innerHTML = '';
+  defenseTrack.innerHTML = '';
+  (current.visual_sequence || []).forEach(step => {
+    const card = document.createElement('article');
+    const isDefense = step.type === 'control' || step.type === 'safe';
+    const allowedType = ['attack','exposure','weakness','control','safe'].includes(step.type) ? step.type : 'weakness';
+    card.className = 'sequence-step ' + allowedType;
+    card.innerHTML = '<span class="step-tag">' + (isDefense ? 'Defense control' : 'Attack step') + '</span>' +
+      '<div class="sequence-icon">' + esc(step.icon || '') + '</div><h3>' + esc(step.title) + '</h3><p>' + esc(step.text) + '</p>';
+    (isDefense ? defenseTrack : attackTrack).appendChild(card);
+  });
+  document.getElementById('sequenceBox').style.display = current.visual_sequence && current.visual_sequence.length ? 'block' : 'none';
+  renderSimulation(null, true);
   document.getElementById('owasp').textContent = current.owasp;
   document.getElementById('intro').textContent = current.intro;
   document.getElementById('context').textContent = current.context || '';
@@ -299,6 +404,21 @@ function resetOutput(){
   document.getElementById('why').style.display = 'none';
 }
 
+function renderSimulation(event, reset=false){
+  const box = document.getElementById('simMeter');
+  if(!box) return;
+  if(!current.simulation){ box.hidden = true; return; }
+  box.hidden = false;
+  const usage = reset ? null : event;
+  const limit = current.simulation.budget_tokens;
+  const tokens = usage ? usage.total_tokens || 0 : 0;
+  document.getElementById('simTokens').textContent = tokens.toLocaleString() + ' / ' + limit.toLocaleString() + ' simulated tokens';
+  document.getElementById('simFill').style.width = Math.min(100, tokens / limit * 100) + '%';
+  document.getElementById('simStats').textContent =
+    usage ? usage.requests.toLocaleString() + ' request(s) accepted · ' + usage.blocked_requests.toLocaleString() + ' blocked. No model calls or charges.' :
+      'Run a preset to view simulated usage. No model calls or charges.';
+}
+
 function renderToolCall(tc){
   const box = document.getElementById('toolcall');
   if(!tc){ box.style.display = 'none'; return; }
@@ -359,10 +479,12 @@ async function send(){
     } else { verdict.className = 'verdict safe'; verdict.textContent = current.safe_label; }
     const u = data.usage || {};
     let tok;
-    if(u.model && /router/i.test(u.model)){ tok = 'deterministic router (no model call, no tokens)'; }
+    if(u.model && /simulation/i.test(u.model)){ tok = 'simulated usage only (no model call or charge)'; }
+    else if(u.model && /router/i.test(u.model)){ tok = 'deterministic router (no model call, no tokens)'; }
     else if(u.input_tokens != null){ tok = 'input ' + u.input_tokens + ' tokens, output ' + (u.output_tokens != null ? u.output_tokens : '0') + ' tokens'; }
     else { tok = 'not reported (request was blocked before the model)'; }
     document.getElementById('usage').textContent = 'Tokens: ' + tok;
+      renderSimulation(data.simulation_event);
     const lt = document.getElementById('lastTokens'); if(lt) lt.textContent = tok;
     if(data.anatomy){ data.anatomy.compromised = data.compromised; renderAnatomy(data.anatomy); }
   } catch(e){
@@ -374,6 +496,8 @@ async function send(){
 document.getElementById('send').onclick = () => { send(); };
 document.getElementById('msg').addEventListener('input', () => { currentAttackId = null; });
 document.getElementById('clear').onclick = () => { document.getElementById('msg').value = ''; currentAttackId = null; resetOutput(); };
+const resetSimulation = document.getElementById('resetSimulation');
+if(resetSimulation) resetSimulation.onclick = () => renderSimulation(null, true);
 document.getElementById('defense').addEventListener('change', (e) => {
   const on = e.target.checked;
   document.getElementById('defstate').textContent = on ? 'ON' : 'OFF';

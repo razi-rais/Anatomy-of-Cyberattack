@@ -37,7 +37,7 @@ SPOTLIGHT_NOTE = (
 class _Module:
     id = "02-indirect-prompt-injection"
     title = "2. Indirect Prompt Injection"
-    owasp = "OWASP LLM01 Prompt Injection (indirect)"
+    owasp = "OWASP LLM01:2026 Prompt Injection (indirect)"
     intro = (
         "The bot summarizes customer support tickets. You do not attack the bot "
         "directly. Instead the box on the right is an incoming ticket, and a "
@@ -65,6 +65,13 @@ class _Module:
         "Staff asks bot to summarize it",
         "Bot reads the ticket as a command",
         "Bot is hijacked",
+    ]
+    visual_sequence = [
+        {"type": "attack", "icon": "📝", "title": "Attacker poisons a document", "text": "A malicious instruction is hidden in an ordinary looking customer support ticket."},
+        {"type": "exposure", "icon": "📥", "title": "Trusted staff submits it", "text": "The staff member asks the bot to summarize the ticket, not to follow its instructions."},
+        {"type": "weakness", "icon": "⚠️", "title": "Data looks like a command", "text": "The model may follow text inside the document instead of treating it as untrusted content."},
+        {"type": "control", "icon": "🛡️", "title": "Scan and isolate the content", "text": "Input and output checks catch known attacks. Spotlighting marks the ticket as data, not instructions."},
+        {"type": "safe", "icon": "🔒", "title": "Summary remains safe", "text": "The poisoned ticket is blocked or its harmful instruction is ignored."},
     ]
     scenario_title = "The bot and its rules (system prompt)"
     scenario = SYSTEM_PROMPT

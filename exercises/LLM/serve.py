@@ -31,6 +31,7 @@ EXERCISE_DIRS = [
     "01-prompt-injection",
     "02-indirect-prompt-injection",
     "03-excessive-agency",
+    "04-unbounded-consumption",
 ]
 
 
